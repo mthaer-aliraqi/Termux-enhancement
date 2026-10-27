@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>دليل Termux للمبتدئين</title>
+<style>
+:root {
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --fg: #1d1f24;
+  --muted: #5b616e;
+  --line: #e2ded4;
+  --accent: #0f766e;
+  --accent-soft: #d7f0ec;
+  --code-bg: #14171c;
+  --code-fg: #e6edf3;
+  --warn: #9a5b00;
+  --warn-soft: #fff1d6;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101216;
+    --surface: #181b21;
+    --fg: #e8eaee;
+    --muted: #9aa3b2;
+    --line: #2a2f38;
+    --accent: #5eead4;
+    --accent-soft: #123a37;
+    --code-bg: #0a0c10;
+    --code-fg: #d8e2ee;
+    --warn: #fbbf24;
+    --warn-soft: #3a2a0c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101216;
+  --surface: #181b21;
+  --fg: #e8eaee;
+  --muted: #9aa3b2;
+  --line: #2a2f38;
+  --accent: #5eead4;
+  --accent-soft: #123a37;
+  --code-bg: #0a0c10;
+  --code-fg: #d8e2ee;
+  --warn: #fbbf24;
+  --warn-soft: #3a2a0c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+.wrap { max-width: 860px; margin-inline: auto; min-width: 0; }
+header.hero {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 6px solid var(--accent);
+  border-radius: 14px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+}
+header.hero h1 { margin: 0 0 8px; font-size: 1.9rem; line-height: 1.3; text-wrap: balance; }
+header.hero p { margin: 0; color: var(--muted); }
+nav.toc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+nav.toc h2 { margin: 0 0 8px; font-size: 1.05rem; }
+nav.toc ol { margin: 0; padding-inline-start: 22px; columns: 2; column-gap: 24px; }
+nav.toc a { color: var(--accent); text-decoration: none; }
+nav.toc a:hover { text-decoration: underline; }
+section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 22px 12px;
+  margin-bottom: 20px;
+  min-width: 0;
+  scroll-margin-top: 16px;
+}
+section h2 {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+section h3 { margin: 22px 0 8px; font-size: 1.05rem; color: var(--accent); }
+p, li { overflow-wrap: anywhere; }
+ul, ol { padding-inline-start: 22px; }
+li { margin-bottom: 6px; }
+.note {
+  background: var(--accent-soft);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 12px 0;
+}
+.warn {
+  background: var(--warn-soft);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 12px 0;
+  border-inline-start: 4px solid var(--warn);
+}
+.codebox { position: relative; margin: 10px 0 16px; min-width: 0; }
+.codebox pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 0;
+  overflow-x: auto;
+  direction: ltr;
+  text-align: left;
+  font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+.copy {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+}
+.copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code.inline {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  background: var(--accent-soft);
+  padding: 1px 6px;
+  border-radius: 6px;
+  direction: ltr;
+  display: inline-block;
+}
+.table-wrap { overflow-x: auto; margin: 10px 0 16px; }
+table { width: 100%; border-collapse: collapse; min-width: 420px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: right; vertical-align: top; }
+th { background: var(--accent-soft); }
+footer { color: var(--muted); text-align: center; font-size: 0.9rem; margin-top: 24px; }
+@media (max-width: 600px) {
+  nav.toc ol { columns: 1; }
+  header.hero h1 { font-size: 1.5rem; }
+  section { padding: 18px 16px 8px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>دليل Termux للمبتدئين: بيئة ملونة وسهلة</h1>
+  <p>خطوات واضحة لتجهيز Termux وتلوينه وتفعيل المقتطفات والأدوات، مع أوامر جاهزة للنسخ.</p>
+</header>
+
+<nav class="toc">
+  <h2>المحتويات</h2>
+  <ol>
+    <li><a href="#s1">التثبيت الأولي</a></li>
+    <li><a href="#s2">أول إعداد</a></li>
+    <li><a href="#s3">الأساسيات والاختصارات</a></li>
+    <li><a href="#s4">التنقل وإدارة الملفات</a></li>
+    <li><a href="#s5">تحرير الملفات</a></li>
+    <li><a href="#s6">zsh: الألوان والإكمال</a></li>
+    <li><a href="#s7">الأيقونات والخط</a></li>
+    <li><a href="#s8">المقتطفات والإكمال بـ Alt+S</a></li>
+    <li><a href="#s9">تثبيت الأدوات وجعلها افتراضية</a></li>
+    <li><a href="#s10">أدوات البرمجة</a></li>
+    <li><a href="#s11">الملفات والوسائط</a></li>
+    <li><a href="#s12">بطاقة مرجعية سريعة</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2>1. التثبيت الأولي</h2>
+  <ol>
+    <li>ثبّت <strong>Termux</strong> من F-Droid، لأن نسخة Play Store قديمة ولا تُحدَّث.</li>
+    <li>ثبّت <strong>Termux:API</strong> من F-Droid، لربط Termux بوظائف الهاتف.</li>
+    <li>اختياري: ثبّت <strong>Termux:Styling</strong> لتغيير الخط من واجهته.</li>
+  </ol>
+  <div class="note">كل التطبيقات الثلاثة يجب أن تكون من F-Droid حتى تعمل معًا.</div>
+</section>
+
+<section id="s2">
+  <h2>2. أول إعداد</h2>
+  <p>حدّث الحزم أولًا:</p>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg update -y &amp;&amp; pkg upgrade -y</pre></div>
+  <p>ثم امنح Termux الوصول إلى ملفات الهاتف مرة واحدة:</p>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>termux-setup-storage</pre></div>
+  <p>بعدها تظهر ملفات الهاتف في <code class="inline">~/storage/shared</code>، والتنزيلات في <code class="inline">~/storage/downloads</code>.</p>
+</section>
+
+<section id="s3">
+  <h2>3. الأساسيات والاختصارات</h2>
+  <ul>
+    <li><strong>Tab:</strong> يكمل الاسم تلقائيًا.</li>
+    <li><strong>↑ ↓:</strong> يتنقل بين الأوامر السابقة.</li>
+    <li><strong>Ctrl+C:</strong> يوقف الأمر الجاري.</li>
+    <li><strong>Ctrl+D أو exit:</strong> يغلق الجلسة.</li>
+    <li><strong>Ctrl+L أو clear:</strong> يمسح الشاشة.</li>
+    <li><strong>Ctrl+R:</strong> يبحث في السجل.</li>
+    <li><strong>لصق النص:</strong> اضغط مطولًا على الشاشة ثم اختر Paste. لا يعمل Ctrl+V.</li>
+  </ul>
+  <h3>فهم أي أمر قبل تشغيله</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install tldr -y
+tldr ls</pre></div>
+</section>
+
+<section id="s4">
+  <h2>4. التنقل وإدارة الملفات</h2>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pwd                  # أين أنا؟
+ls -lah              # ما الموجود هنا بالتفصيل؟
+cd ~                 # المجلد الرئيسي
+cd ..                # الخروج من المجلد الحالي
+cd ~/storage/shared  # ذاكرة الهاتف
+mkdir -p مجلد       # إنشاء مجلد
+cp ملف نسخة        # نسخ ملف
+cp -r مجلد نسخة    # نسخ مجلد
+mv قديم جديد       # نقل أو إعادة تسمية</pre></div>
+  <div class="warn">تحذير: <code class="inline">rm</code> يحذف نهائيًا ولا توجد سلة مهملات. تأكد من الاسم قبل تنفيذه.</div>
+</section>
+
+<section id="s5">
+  <h2>5. تحرير الملفات</h2>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>nano ملف.txt</pre></div>
+  <ul>
+    <li><strong>Ctrl+O</strong> ثم Enter: حفظ.</li>
+    <li><strong>Ctrl+X:</strong> خروج.</li>
+    <li><strong>Ctrl+K:</strong> حذف السطر الحالي.</li>
+  </ul>
+  <p>لمحرر يعمل باللمس والفأرة:</p>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install micro -y</pre></div>
+</section>
+
+<section id="s6">
+  <h2>6. zsh: الألوان والإكمال</h2>
+  <p>zsh شِل أحدث من الافتراضي، وفيه إكمال تلقائي وقائمة اختيار بالأسهم وتلوين للأوامر.</p>
+  <h3>الخطوة 1: التثبيت وجعله الافتراضي</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install zsh git -y
+chsh -s zsh</pre></div>
+  <p>أغلق Termux وافتحه من جديد.</p>
+  <h3>الخطوة 2: تحميل الإضافات</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.zsh/zsh-syntax-highlighting</pre></div>
+  <h3>الخطوة 3: إعدادات الألوان والإكمال</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>cat &gt;&gt; ~/.zshrc &lt;&lt; 'EOF'
+
+autoload -Uz colors &amp;&amp; colors
+PROMPT='%F{magenta}%B🐧 %b%F{yellow}📁 %~ %F{green}❯%f '
+
+autoload -Uz compinit &amp;&amp; compinit
+zmodload zsh/complist
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+bindkey -M menuselect '^[[Z' reverse-menu-complete
+
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+
+[ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ] &amp;&amp; source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red,bold'
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+EOF
+source ~/.zshrc</pre></div>
+  <div class="note">النتيجة: موجّه ملوّن، واقتراحات رمادية أثناء الكتابة، أوامر صحيحة باللون الأخضر وخاطئة باللون الأحمر، والأسهم تبحث في السجل.</div>
+</section>
+
+<section id="s7">
+  <h2>7. الأيقونات والخط</h2>
+  <h3>عرض الملفات بأيقونات وألوان</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install eza bat -y</pre></div>
+  <h3>خط يدعم الأيقونات (Nerd Font)</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install unzip -y
+curl -L -o ~/jbm.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip
+unzip -o ~/jbm.zip -d ~/jbm
+mkdir -p ~/.termux
+cp ~/jbm/JetBrainsMonoNerdFont-Regular.ttf ~/.termux/font.ttf
+termux-reload-settings</pre></div>
+  <p>أغلق Termux وافتحه من جديد لتظهر الأيقونات.</p>
+</section>
+
+<section id="s8">
+  <h2>8. المقتطفات والإكمال بـ Alt+S</h2>
+  <p>المقتطف أمر طويل تحفظه باسم قصير، ثم تختاره من قائمة بحث بضغطة واحدة بدل حفظه في ذاكرتك.</p>
+  <h3>الخطوة 1: تفعيل النظام</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install fzf -y
+
+cat &gt;&gt; ~/.zshrc &lt;&lt; 'EOF'
+snipadd() { sed -i "/^$1|/d" ~/.snippets.txt 2&gt;/dev/null; echo "$1|$2" &gt;&gt; ~/.snippets.txt &amp;&amp; echo "saved: $1"; }
+snipls()  { cat ~/.snippets.txt 2&gt;/dev/null | column -t -s'|'; }
+
+snip-pick() {
+  local cmd
+  cmd=$(cut -d'|' -f2- ~/.snippets.txt 2&gt;/dev/null | fzf --height 40% --reverse --prompt='snippet&gt; ')
+  [[ -n $cmd ]] &amp;&amp; LBUFFER+="$cmd"
+  zle reset-prompt
+}
+zle -N snip-pick
+bindkey '\es' snip-pick
+EOF
+source ~/.zshrc</pre></div>
+  <h3>الخطوة 2: إضافة مقتطفاتك</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>snipadd "update" "pkg update -y"
+snipadd "upgrade" "pkg update &amp;&amp; pkg upgrade -y"
+snipadd "storage" "termux-setup-storage"
+snipadd "git-status" "git status"
+snipadd "py-version" "python --version"
+snipadd "clear" "clear"</pre></div>
+  <h3>الخطوة 3: الاستخدام</h3>
+  <ul>
+    <li><strong>Alt+S:</strong> يفتح القائمة. اختر بالأسهم أو اكتب للبحث، ثم Enter لكتابة الأمر في السطر.</li>
+    <li><strong>snipls:</strong> يعرض كل المقتطفات المحفوظة.</li>
+  </ul>
+  <div class="note">زر Alt في Termux موجود في الصف الإضافي فوق الكيبورد. اضغطه ثم S.</div>
+  <h3>منع التكرار</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>awk -F'|' '!seen[$1]++' ~/.snippets.txt &gt; ~/.snippets.tmp &amp;&amp; mv ~/.snippets.tmp ~/.snippets.txt</pre></div>
+  <h3>النسخة الاحتياطية</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>cp ~/.zshrc ~/.snippets.txt ~/storage/shared/</pre></div>
+</section>
+
+<section id="s9">
+  <h2>9. تثبيت الأدوات وجعلها افتراضية</h2>
+  <p>ثبّت الأدوات التي تحتاجها مرة واحدة:</p>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install eza bat tldr htop fzf micro -y</pre></div>
+  <h3>جعلها تعمل تلقائيًا عند كتابة الأمر العادي</h3>
+  <p>أضف هذه الاختصارات إلى zsh، فتعمل الأدوات بدل الأوامر الأساسية:</p>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>cat &gt;&gt; ~/.zshrc &lt;&lt; 'EOF'
+alias ls='eza --icons --color=always --group-directories-first'
+alias ll='eza -lah --icons --color=always --group-directories-first'
+alias tree='eza --tree --icons --color=always --level=2'
+alias cat='bat --paging=never --style=plain'
+alias top='htop'
+EOF
+source ~/.zshrc</pre></div>
+  <h3>التحقق</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>echo $0          # يجب أن يظهر zsh
+ll               # قائمة ملفات بأيقونات
+which zsh        # مسار zsh</pre></div>
+  <div class="note">إذا أردت العودة إلى الإعداد الأساسي، فاحذف السطور المضافة من <code class="inline">~/.zshrc</code> باستخدام nano.</div>
+</section>
+
+<section id="s10">
+  <h2>10. أدوات البرمجة</h2>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install python python-pip openjdk-17 nodejs -y
+python --version &amp;&amp; java -version &amp;&amp; node --version &amp;&amp; git --version</pre></div>
+  <ul>
+    <li><strong>Python:</strong> <code class="inline">python ملف.py</code></li>
+    <li><strong>Java:</strong> <code class="inline">javac ملف.java &amp;&amp; java اسم_الكلاس</code></li>
+    <li><strong>Node.js:</strong> <code class="inline">node ملف.js</code></li>
+    <li><strong>Git:</strong> <code class="inline">git add -A &amp;&amp; git commit -m "رسالة"</code></li>
+  </ul>
+  <h3>إعداد Git مرة واحدة</h3>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>git config --global user.name "اسمك"
+git config --global user.email "بريدك"</pre></div>
+</section>
+
+<section id="s11">
+  <h2>11. الملفات والوسائط</h2>
+  <div class="codebox"><button class="copy" type="button">نسخ</button><pre>pkg install termux-api poppler ffmpeg -y
+termux-open ~/storage/downloads/file.pdf
+pdftotext file.pdf -
+ffmpeg -i video.mp4 -vn -ab 192k output.mp3</pre></div>
+</section>
+
+<section id="s12">
+  <h2>12. بطاقة مرجعية سريعة</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>المهمة</th><th>الأمر</th></tr></thead>
+      <tbody>
+        <tr><td>تحديث الحزم</td><td><code class="inline">pkg update -y</code></td></tr>
+        <tr><td>تثبيت حزمة</td><td><code class="inline">pkg install -y اسم</code></td></tr>
+        <tr><td>حذف حزمة</td><td><code class="inline">pkg uninstall -y اسم</code></td></tr>
+        <tr><td>شرح أمر</td><td><code class="inline">tldr اسم</code></td></tr>
+        <tr><td>قائمة المقتطفات</td><td><code class="inline">Alt+S</code></td></tr>
+        <tr><td>حفظ مقتطف</td><td><code class="inline">snipadd "اسم" "أمر"</code></td></tr>
+        <tr><td>ربط التخزين</td><td><code class="inline">termux-setup-storage</code></td></tr>
+        <tr><td>تحرير ملف</td><td><code class="inline">nano ملف</code></td></tr>
+        <tr><td>مسح الشاشة</td><td><code class="inline">clear</code> أو Ctrl+L</td></tr>
+        <tr><td>إيقاف أمر</td><td>Ctrl+C</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>دليل عملي للمبتدئين. جرّب كل خطوة بنفسك، وعدّل ما يناسب جهازك.</footer>
+
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = btn.parentElement.querySelector('pre');
+    var code = pre.innerText;
+    var done = function () { btn.textContent = 'تم'; setTimeout(function () { btn.textContent = 'نسخ'; }, 1200); };
+    var fallback = function () {
+      var range = document.createRange();
+      range.selectNodeContents(pre);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = 'حدد ثم انسخ';
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+});
+</script>
+</body>
+</html>
